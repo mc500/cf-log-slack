@@ -86,7 +86,8 @@ function requestHandler(request, response) {
   }
 
   let contentStream = concat(function(content) {
-    processLogMessages(webHookInfo, content)
+    //processLogMessages(webHookInfo, content)
+    sendToSlack(webHookInfo, content)
   })
 
   request.pipe(contentStream)
