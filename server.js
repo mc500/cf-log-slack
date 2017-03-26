@@ -94,6 +94,42 @@ function requestHandler(request, response) {
   sendLogResponse(response)
 }
 
+function sendToSlack(webHookInfo, content) {
+  // DEBUGdrain(`content: ${content}`)
+
+  var string = ''+content;
+  
+  const pattern = /^\s*\S+\s+(\S+)\s+\S+\s+\S+\s+\[(.*?)\]\s+\S+\s+\S+\s+(.*)$/
+  const match = string.trim().match(pattern)
+
+  if (!match) {
+    DEBUGdrain('>>>>'+string+'<<<<')
+    return null
+  }
+
+  var msg = {
+    date:      match[1],
+    component: match[2],
+    message:   match[3]
+  }
+
+  //if (msg.component == "RTR") return
+
+  let payload    = {
+    text:       `${msg.component}: ${msg.message}`,
+    icon_emoji: ":computer:"
+  }
+
+  copyOverride(webHookInfo, payload, "username")
+  copyOverride(webHookInfo, payload, "icon_url")
+  copyOverride(webHookInfo, payload, "icon_emoji")
+  copyOverride(webHookInfo, payload, "channel")
+  copyOverride(webHookInfo, payload, "username")
+
+  slack.send(webHookInfo.url, payload)
+}
+
+
 //------------------------------------------------------------------------------
 function processLogMessages(webHookInfo, content) {
   // DEBUGdrain(`content: ${content}`)
